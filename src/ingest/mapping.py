@@ -1,148 +1,142 @@
-"""LLM-assisted column mapping for messy input data."""
+"""LLM-assisted (deterministic) column mapping for messy input data."""
 
-from typing import Dict, List, Tuple, Optional, Any
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional, Sequence
+
 import pandas as pd
 
+from src.llm.providers import BaseLLM, MockLLM
+from src.schemas.timeseries import TimeSeriesSchema
 
-class BaseLLM:
-    """Base class for LLM providers."""
-    
-    def infer_mapping(self, source_cols: List[str], target_cols: List[str], sample_data: Optional[pd.DataFrame] = None) -> Dict[str, Any]:
-        """
-        Infer mapping from source columns to target columns.
-        
-        Args:
-            source_cols: List of source column names
-            target_cols: List of target column names
-            sample_data: Optional sample data for context
-            
-        Returns:
-            Dictionary with 'mapping', 'confidence', 'rationale'
-        """
-        raise NotImplementedError
+# Canonical aliases used for heuristic mapping before invoking LLMs
+CANONICAL_ALIASES: Dict[str, List[str]] = {
+    "year": ["year", "yr", "y", "time", "date", "period"],
+    "P": ["price", "p", "price_index", "cost", "value"],
+    "D": ["demand", "consumption", "usage"],
+    "Q": ["supply", "production", "output", "quantity", "supply_qty"],
+    "I": ["inventory", "stock", "storage", "reserve", "inventory_level"],
+}
 
 
-class MockLLM(BaseLLM):
-    """Deterministic mock LLM for testing."""
-    
-    def __init__(self, seed: int = 0):
-        """Initialize with seed for reproducibility."""
-        self.seed = seed
-    
-    def infer_mapping(self, source_cols: List[str], target_cols: List[str], sample_data: Optional[pd.DataFrame] = None) -> Dict[str, Any]:
-        """
-        Deterministic heuristic mapping (no actual LLM call).
-        
-        Uses simple string matching and common aliases.
-        """
-        import re
-        
-        mapping = {}
-        confidence_scores = {}
-        rationale_parts = []
-        
-        # Common aliases mapping
-        aliases = {
-            "year": ["year", "yr", "y", "time", "date", "period"],
-            "P": ["price", "p", "price_index", "cost", "value"],
-            "D": ["demand", "d", "consumption", "usage"],
-            "Q": ["supply", "q", "production", "output", "quantity"],
-            "I": ["inventory", "i", "stock", "storage", "reserve"],
-        }
-        
-        # Normalize column names for matching
-        source_lower = {col.lower().strip(): col for col in source_cols}
-        
-        for target in target_cols:
-            best_match = None
-            best_confidence = 0.0
-            best_rationale = ""
-            
-            # Check aliases
-            if target in aliases:
-                for alias in aliases[target]:
-                    if alias in source_lower:
-                        best_match = source_lower[alias]
-                        best_confidence = 0.9
-                        best_rationale = f"Exact alias match: '{alias}'"
-                        break
-            
-            # If no alias match, try fuzzy matching
-            if best_match is None:
-                for source_col_lower, source_col in source_lower.items():
-                    # Check if target is substring or vice versa
-                    if target.lower() in source_col_lower or source_col_lower in target.lower():
-                        confidence = 0.6
-                        rationale = f"Substring match: '{source_col}' contains '{target}'"
-                    # Check for common patterns
-                    elif re.search(rf"\b{target.lower()}\b", source_col_lower):
-                        confidence = 0.7
-                        rationale = f"Word boundary match: '{source_col}'"
-                    else:
-                        continue
-                    
-                    if confidence > best_confidence:
-                        best_match = source_col
-                        best_confidence = confidence
-                        best_rationale = rationale
-            
-            if best_match:
-                mapping[target] = best_match
-                confidence_scores[target] = best_confidence
-                rationale_parts.append(f"{target} <- {best_match} ({best_rationale}, confidence={best_confidence:.2f})")
-            else:
-                rationale_parts.append(f"{target} <- None (no match found)")
-        
-        overall_confidence = sum(confidence_scores.values()) / len(target_cols) if target_cols else 0.0
-        rationale = "; ".join(rationale_parts)
-        
-        return {
-            "mapping": mapping,
-            "confidence": overall_confidence,
-            "rationale": rationale
-        }
+def _target_fields(target_schema: Any) -> List[str]:
+    if isinstance(target_schema, Sequence) and not isinstance(target_schema, str):
+        return list(target_schema)
+    if hasattr(target_schema, "model_fields"):
+        return list(target_schema.model_fields.keys())  # type: ignore[attr-defined]
+    raise ValueError("target_schema must be a Pydantic model or an iterable of fields")
+
+
+def _heuristic_mapping(df_cols: List[str], target_fields: List[str]) -> Dict[str, Any]:
+    source_lower = {col.lower().strip(): col for col in df_cols}
+    mapping: Dict[str, str] = {}
+    rationale: List[str] = []
+    confidence: Dict[str, float] = {}
+    ambiguous: List[str] = []
+    missing: List[str] = []
+
+    for target in target_fields:
+        aliases = CANONICAL_ALIASES.get(target, [])
+        candidates = [source_lower[a] for a in aliases if a in source_lower]
+
+        if len(candidates) == 1:
+            mapping[target] = candidates[0]
+            confidence[target] = 0.95
+            rationale.append(f"{target} <- {candidates[0]} (alias match)")
+            continue
+        if len(candidates) > 1:
+            ambiguous.append(target)
+            rationale.append(f"{target} ambiguous aliases: {', '.join(candidates)}")
+            continue
+
+        # Substring heuristic
+        substr_candidates = [
+            orig
+            for lower, orig in sorted(source_lower.items())
+            if target.lower() in lower or lower in target.lower()
+        ]
+        if len(substr_candidates) == 1:
+            mapping[target] = substr_candidates[0]
+            confidence[target] = 0.7
+            rationale.append(f"{target} <- {substr_candidates[0]} (substring match)")
+        elif len(substr_candidates) > 1:
+            ambiguous.append(target)
+            rationale.append(f"{target} ambiguous substrings: {', '.join(substr_candidates)}")
+        else:
+            missing.append(target)
+            rationale.append(f"{target} <- None (no heuristic match)")
+
+    overall = sum(confidence.values()) / len(target_fields) if target_fields else 0.0
+    return {
+        "mapping": mapping,
+        "confidence": round(overall, 3),
+        "rationale": rationale,
+        "ambiguous": ambiguous,
+        "missing": missing,
+        "provider": "heuristic",
+    }
 
 
 def infer_column_mapping(
     df_cols: List[str],
-    target_cols: List[str],
-    llm: BaseLLM,
-    sample_data: Optional[pd.DataFrame] = None
+    target_schema: Any,
+    llm: Optional[BaseLLM] = None,
+    sample_data: Optional[pd.DataFrame] = None,
 ) -> Dict[str, Any]:
     """
-    Infer column mapping from source columns to target columns using LLM.
-    
-    Args:
-        df_cols: List of source DataFrame column names
-        target_cols: List of target column names
-        llm: LLM provider instance
-        sample_data: Optional sample data for context
-        
-    Returns:
-        Dictionary with 'mapping', 'confidence', 'rationale'
+    Infer column mapping from source columns to target schema using heuristics first,
+    then LLM (deterministic mock by default) only when ambiguous or missing.
     """
-    return llm.infer_mapping(df_cols, target_cols, sample_data)
+    targets = _target_fields(target_schema)
+    heuristic = _heuristic_mapping(df_cols, targets)
+
+    needs_llm = bool(heuristic["ambiguous"] or heuristic["missing"])
+    provider_used = heuristic["provider"]
+    mapping = dict(heuristic["mapping"])
+    rationale = list(heuristic["rationale"])
+    confidence = heuristic["confidence"]
+
+    if needs_llm:
+        provider = llm or MockLLM()
+        provider_used = provider.name
+        llm_result = provider.suggest_column_mapping(df_cols, targets, sample_data)
+        # Only override ambiguous/missing targets to keep deterministic heuristics
+        for target in heuristic["ambiguous"] + heuristic["missing"]:
+            if target in llm_result.get("mapping", {}):
+                mapping[target] = llm_result["mapping"][target]
+        rationale.append(f"LLM ({provider.name}) consulted for unresolved fields")
+        # Blend confidence deterministically: mean of heuristic + llm confidence
+        confidence = round(
+            (confidence + float(llm_result.get("confidence", 0.0))) / 2, 3
+        )
+
+    return {
+        "mapping": mapping,
+        "confidence": confidence,
+        "rationale": "; ".join(rationale),
+        "provider": provider_used,
+        "ambiguous": heuristic["ambiguous"],
+        "missing": heuristic["missing"],
+    }
 
 
-def apply_mapping(df: pd.DataFrame, mapping: Dict[str, str]) -> pd.DataFrame:
+def apply_mapping(
+    df: pd.DataFrame,
+    mapping: Dict[str, str],
+    target_schema: Any = TimeSeriesSchema,
+) -> pd.DataFrame:
     """
-    Apply column mapping to DataFrame.
-    
-    Args:
-        df: Source DataFrame
-        mapping: Dictionary mapping target_col -> source_col
-        
-    Returns:
-        DataFrame with renamed columns (only mapped columns)
+    Apply a target->source mapping to produce a canonical DataFrame.
+
+    Missing targets are filled with pd.NA to keep the schema explicit.
     """
+    targets = _target_fields(target_schema)
     result = pd.DataFrame()
-    
-    for target_col, source_col in mapping.items():
-        if source_col in df.columns:
-            result[target_col] = df[source_col]
+    for target in targets:
+        source = mapping.get(target)
+        if source and source in df.columns:
+            result[target] = df[source]
         else:
-            # If source column doesn't exist, create NaN column
-            result[target_col] = pd.NA
-    
+            result[target] = pd.NA
     return result
 

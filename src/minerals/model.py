@@ -73,9 +73,13 @@ def step(cfg: ScenarioConfig, s: State, shock: ShockSignals, rng: np.random.Gene
 
     shortage = max(0.0, D - Q_eff)
 
-    # 7) price update in log space
+    # 7) price update in log space (Euler-Maruyama with sqrt(dt) scaling)
     noise = rng.normal(0.0, 1.0) if p.sigma_P > 0 else 0.0
-    logP_next = np.log(max(s.P, eps)) + dt * p.alpha_P * (tight - p.lambda_cover * (cover - p.cover_star)) + p.sigma_P * noise
+    logP_next = (
+        np.log(max(s.P, eps))
+        + dt * p.alpha_P * (tight - p.lambda_cover * (cover - p.cover_star))
+        + p.sigma_P * np.sqrt(dt) * noise
+    )
     P_next = float(np.exp(logP_next))
     P_next = max(P_next, eps)
 

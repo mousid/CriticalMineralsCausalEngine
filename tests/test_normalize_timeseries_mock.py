@@ -8,7 +8,8 @@ import tempfile
 import pandas as pd
 import pytest
 
-from src.ingest.mapping import MockLLM, infer_column_mapping, apply_mapping
+from src.ingest.mapping import infer_column_mapping, apply_mapping
+from src.llm.providers import MockLLM
 from src.schemas.timeseries import TimeSeriesSchema, validate_timeseries_df
 from scripts.normalize_timeseries import normalize_timeseries
 
@@ -24,14 +25,12 @@ def test_mock_llm_deterministic_mapping():
         "stock": [20.0, 25.0, 30.0],
     })
     
-    target_cols = ["year", "P", "D", "Q", "I"]
-    
     # Test with same seed - should be deterministic
     llm1 = MockLLM(seed=42)
-    result1 = infer_column_mapping(list(df.columns), target_cols, llm1, df)
+    result1 = infer_column_mapping(list(df.columns), TimeSeriesSchema, llm1, df)
     
     llm2 = MockLLM(seed=42)
-    result2 = infer_column_mapping(list(df.columns), target_cols, llm2, df)
+    result2 = infer_column_mapping(list(df.columns), TimeSeriesSchema, llm2, df)
     
     assert result1 == result2, "MockLLM should produce deterministic results with same seed"
     
@@ -56,7 +55,7 @@ def test_apply_mapping():
         "D": "demand"
     }
     
-    mapped_df = apply_mapping(df, mapping)
+    mapped_df = apply_mapping(df, mapping, target_schema=TimeSeriesSchema)
     
     assert "year" in mapped_df.columns
     assert "P" in mapped_df.columns
