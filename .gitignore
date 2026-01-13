@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+.venv/
+venv/
+
+# OS
+.DS_Store
+
+# Outputs
+runs/
+_tmp_check/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Packaging artifacts
+*.egg-info/
