@@ -1,0 +1,41 @@
+{
+  "run_dir": "runs/china_graphite_export_restriction_40pct_2025/20260128_225508",
+  "reference_year": 2025,
+  "timestamp": "2026-01-28T23:05:27.338784",
+  "comparison": {
+    "error": "No overlapping years between simulation and actual data",
+    "sim_years": [
+      2024,
+      2025,
+      2026,
+      2027,
+      2028,
+      2029,
+      2030,
+      2031,
+      2032,
+      2033,
+      2034,
+      2035
+    ],
+    "actual_years": [
+      1970,
+      1970,
+      1970,
+      1970,
+      1970,
+      1970,
+      1970,
+      1970,
+      1970,
+      1970,
+      1970,
+      1970
+    ]
+  },
+  "llm_analysis": "## Validation Analysis: Critical Data Insufficiency\n\n### **Primary Finding: Complete Data Absence**\n\nThis validation attempt reveals a **fundamental data gap** rather than model performance insights:\n- **0 years of overlapping data**\n- **$0 baseline trade value**\n- **No measurable trade volatility**\n\nThis represents a **validation failure due to data unavailability**, not model inadequacy.\n\n---\n\n## 1. **Directional Accuracy**: Indeterminate\n\n**Cannot assess directional accuracy** due to absence of comparable data points.\n\n**Model shows**: Clear shortage pattern (70.47 units total, 40.00 peak)\n**Actual data**: No observable trade patterns to compare\n\n**Implication**: The model's shortage predictions remain **unvalidated** rather than invalidated.\n\n---\n\n## 2. **Magnitude Assessment**: Impossible to Evaluate\n\n**Quantitative discrepancy**: Undefined (division by zero scenario)\n\n**Key Issues**:\n- Model predicts specific quantities (units), data shows trade values ($USD)\n- No conversion factor available between physical shortage and trade value\n- Zero baseline eliminates percentage error calculations\n\n**Critical Gap**: Need **quantity-based trade data** or **price-to-value conversion factors**.\n\n---\n\n## 3. **Mechanism Diagnosis**: Data-Limited Insights\n\n### **Cannot Validate**:\n- **Supply-demand imbalances** \u2192 No quantity flows observed\n- **Price transmission mechanisms** \u2192 No price series available  \n- **Inventory dynamics** \u2192 No stock level indicators\n\n### **Potential Explanations for Zero Trade**:\n1. **Geographic mismatch**: Model region not captured in available UN Comtrade data\n2. **Product classification gap**: Graphite subcategories not properly aggregated\n3. **Temporal misalignment**: Simulation period predates/postdates available data\n4. **Market structure**: Predominantly domestic/non-traded market\n\n---\n\n## 4. **Parameter Implications**: Indirect Assessment Only\n\nGiven **no empirical benchmark**, parameter evaluation is **speculative**:\n\n### **Demand Elasticity (\u03b7_D = -0.25)**:\n- **Cannot validate** against price-quantity relationships\n- **Appears reasonable** for industrial commodity (inelastic)\n\n### **Capacity Adjustment (\u03c4_K = 3.0 years)**:\n- **Cannot verify** against actual capacity responses\n- **Reasonable for mining sector** capital intensity\n\n### **Price Adjustment Speed (\u03b1_P = 0.80)**:\n- **Cannot test** against actual price dynamics\n- **Suggests rapid adjustment** (may be optimistic for commodity markets)\n\n---\n\n## 5. **Critical Data Limitations**\n\n### **Structural Limitations**:\n1. **Unit incompatibility**: Model (physical units) vs. Data (monetary values)\n2. **Aggregation mismatch**: Model specificity vs. Data generality\n3. **Temporal discontinuity**: No overlapping observation periods\n\n### **Missing Data Components**:\n- **Physical trade quantities** (tonnes/units)\n- **Time-series price data** \n- **Inventory/stock indicators**\n- **Production capacity utilization**\n\n---\n\n## **Actionable Recommendations**\n\n### **Immediate Actions**:\n1. **Expand data sources**: \n   - Industry associations (graphite producers)\n   - National geological surveys\n   - Commodity price databases (London Metal Exchange, etc.)\n\n2. **Revise data collection strategy**:\n   - Target specific graphite HS codes\n   - Include bilateral trade flows\n   - Extend temporal coverage\n\n### **Model Validation Strategy**:\n1. **Implement alternative validation**:\n   - Cross-validation with other commodity models\n   - Sensitivity analysis on key parameters\n   - Expert elicitation for parameter bounds\n\n2. **Develop data conversion protocols**:\n   - Establish price-per-unit benchmarks\n   - Create value-to-quantity conversion factors\n\n### **Parameter Refinement Priority**:\nGiven data constraints, focus parameter validation on:\n1. **\u03b1_P** (price adjustment) - likely most sensitive\n2. **\u03c4_K** (capacity adjustment) - most uncertain\n3. **\u03b7_D** (demand elasticity) - most literature support available\n\n**Conclusion**: This analysis demonstrates the critical importance of **data availability** in model validation. The model's causal logic appears internally consistent, but requires **alternative validation approaches** until adequate historical data becomes available.",
+  "data_sources": {
+    "simulation": "runs/china_graphite_export_restriction_40pct_2025/20260128_225508",
+    "comtrade": "data/canonical/comtrade_graphite_trade.csv"
+  }
+}

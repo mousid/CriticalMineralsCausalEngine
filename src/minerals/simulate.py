@@ -47,6 +47,9 @@ def run_scenario(cfg: ScenarioConfig) -> Tuple[pd.DataFrame, Dict[str, float]]:
             "shock_demand_surge": shock.demand_surge,
             "shock_capex_shock": shock.capex_shock,
             "shock_stockpile_release": shock.stockpile_release,
+            "shock_policy_supply_mult": shock.policy_supply_mult,
+            "shock_capacity_supply_mult": shock.capacity_supply_mult,
+            "shock_demand_destruction_mult": shock.demand_destruction_mult,
         }
         rows.append(row)
         s = s_next

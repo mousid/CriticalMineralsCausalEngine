@@ -1,0 +1,51 @@
+{
+  "run_dir": "runs/graphite_trade_shock_2008/20260128_230749",
+  "reference_year": 2008,
+  "timestamp": "2026-01-29T00:25:16.605957",
+  "comparison": {
+    "baseline_trade_usd": 36454578.666666664,
+    "baseline_years": [
+      2005,
+      2006,
+      2007
+    ],
+    "overlapping_years": [
+      2000,
+      2001,
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011
+    ],
+    "n_years": 12,
+    "reference_year": {
+      "year": 2008,
+      "model_prediction": {
+        "shortage": 30.000000011806364,
+        "price": 0.999999999980004,
+        "inventory_cover": 0.2000000017866841
+      },
+      "actual_data": {
+        "trade_value_usd": 53422791.0,
+        "pct_change_from_baseline": 46.546175964581174
+      }
+    },
+    "summary": {
+      "avg_model_shortage": 2.500000021528791,
+      "avg_model_price": 1.068525475106451,
+      "avg_actual_trade": 39857301.583333336,
+      "trade_volatility": 18057487.220770113
+    }
+  },
+  "llm_analysis": "## Validation Analysis: Graphite Supply Chain Model\n\n### 1. Directional Accuracy Assessment\n\n**DIRECTIONALLY INCONSISTENT**\n\n- **Model**: Predicts shortage (30 units) with modest price increase ($1.07 avg, $1.00 in 2008)\n- **Reality**: Trade value increased 46.5% above baseline ($53.4M vs $36.5M baseline)\n\nThis suggests the model predicted scarcity while actual trade data shows **expanded trade activity**. Unless this reflects emergency imports due to shortage, the directional prediction appears incorrect.\n\n### 2. Magnitude Assessment\n\n**SIGNIFICANT QUANTITATIVE DISCREPANCY**\n\n- Model price increase: ~7% above baseline ($1.00 \u2192 $1.07)\n- Actual trade value increase: 46.5% above baseline\n- **Discrepancy ratio**: ~6.6x underestimation of market response magnitude\n\nThis is **outside reasonable bounds** for most forecasting applications, suggesting fundamental model specification issues rather than minor parameter calibration problems.\n\n### 3. Mechanism Diagnosis\n\n#### Correctly Specified (Potential):\n- Basic price-quantity relationship structure may be sound\n- Time delay concepts (3-year capacity adjustment) align with capital-intensive mining\n\n#### Missing/Mis-specified Mechanisms:\n- **Supply response elasticity**: Model may lack adequate supply-side responsiveness\n- **Inventory buffering**: 0.38-year final inventory cover suggests inadequate buffer modeling\n- **Trade substitution**: No apparent mechanism for alternative sourcing/trade route activation\n- **Demand composition**: Missing differentiation between industrial vs. strategic demand\n\n#### Over/Under-estimated:\n- **Under-estimated**: Market clearing mechanisms, supply chain adaptability\n- **Over-estimated**: Demand rigidity, capacity constraints\n\n### 4. Parameter Implications\n\n#### Demand Elasticity (\u03b7_D = -0.25):\n- **Assessment**: Likely too low (too inelastic)\n- **Evidence**: 46.5% trade increase suggests higher demand responsiveness than modeled\n- **Recommendation**: Test \u03b7_D \u2208 [-0.5, -0.8] range\n\n#### Capacity Adjustment Time (\u03c4_K = 3.0 years):\n- **Assessment**: Possibly too slow for short-term supply responses\n- **Evidence**: Large trade value increase suggests faster supply-side adaptation\n- **Recommendation**: Implement dual-speed adjustment (short-term: 0.5-1 year, long-term: 3+ years)\n\n#### Price Adjustment Speed (\u03b1_P = 0.80):\n- **Assessment**: May be appropriate, but interacting with mis-specified elasticities\n- **Evidence**: Insufficient to evaluate independently given other parameter issues\n\n### 5. Data Limitations & Caveats\n\n#### Critical Limitations:\n1. **Units mismatch**: Model outputs physical shortage; data shows monetary trade value\n2. **Aggregation bias**: UN Comtrade data masks partner-country and product-grade heterogeneity\n3. **Price vs. volume conflation**: 46.5% trade increase could reflect price rises, volume increases, or both\n4. **External factor omission**: 2008 financial crisis, commodity boom, China's industrial expansion\n\n#### Methodological Issues:\n- **Baseline calculation**: 3-year average may not capture cyclical patterns\n- **Exchange rate effects**: USD values affected by currency fluctuations\n- **Re-export distortion**: Trade data includes re-exports, not just primary production\n\n### Actionable Recommendations\n\n#### Immediate Model Improvements:\n1. **Calibrate against price indices** (e.g., USGS mineral commodity summaries) rather than trade values\n2. **Implement multi-speed adjustment mechanisms** for different supply response timeframes\n3. **Add inventory-driven trade surge modeling** for shortage scenarios\n\n#### Data Enhancement Priorities:\n1. Obtain physical quantity data to enable proper units comparison\n2. Incorporate partner-country specific trade flows for supply diversification modeling\n3. Add external economic indicators (GDP growth, commodity indices) as model inputs\n\n#### Validation Protocol Refinement:\n1. Use 3-5 year rolling windows rather than single-year comparisons\n2. Implement scenario-specific validation (crisis vs. normal periods)\n3. Establish acceptable error bounds based on graphite market volatility (\u00b118M USD std dev suggests \u00b149% variation is normal)\n\n**Bottom Line**: The model requires fundamental recalibration of demand elasticity and supply response mechanisms before it can provide reliable predictions for policy or business decisions.",
+  "data_sources": {
+    "simulation": "runs/graphite_trade_shock_2008/20260128_230749",
+    "comtrade": "data/canonical/comtrade_graphite_trade.csv"
+  }
+}

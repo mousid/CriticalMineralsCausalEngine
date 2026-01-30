@@ -1,0 +1,41 @@
+{
+  "run_dir": "runs/china_graphite_export_restriction_40pct_2025/20260128_225508",
+  "reference_year": 2008,
+  "timestamp": "2026-01-28T23:06:27.178120",
+  "comparison": {
+    "error": "No overlapping years between simulation and actual data",
+    "sim_years": [
+      2024,
+      2025,
+      2026,
+      2027,
+      2028,
+      2029,
+      2030,
+      2031,
+      2032,
+      2033,
+      2034,
+      2035
+    ],
+    "actual_years": [
+      1970,
+      1970,
+      1970,
+      1970,
+      1970,
+      1970,
+      1970,
+      1970,
+      1970,
+      1970,
+      1970,
+      1970
+    ]
+  },
+  "llm_analysis": "# Graphite Supply Chain Model Validation Analysis\n\n## Critical Data Limitation Assessment\n\n**MAJOR ISSUE**: This validation attempt suffers from a fundamental data availability problem:\n- **Zero years of overlapping data** between model simulation and UN Comtrade records\n- **$0 USD baseline trade value** indicates missing or unavailable trade data\n- **Cannot perform meaningful validation** without temporal overlap\n\n## 1. Directional Accuracy: **INDETERMINATE**\n\nWithout actual historical data, directional accuracy cannot be assessed. The model predicts:\n- Significant shortage conditions (70.47 units total, 40.00 peak)\n- Elevated prices ($0.92 average)\n- Low inventory buffer (0.15 years cover)\n\n**Required**: Historical data showing actual shortage/surplus patterns and price movements during the simulation period.\n\n## 2. Magnitude Assessment: **IMPOSSIBLE**\n\nThe quantitative discrepancy cannot be calculated with $0 trade values. For meaningful validation, we need:\n- Physical quantity data (tons/units) rather than just trade values\n- Price data to validate the $0.92 average prediction\n- Inventory level observations to verify the 0.15-year cover prediction\n\n## 3. Mechanism Diagnosis: **CANNOT VALIDATE**\n\n### Potentially Problematic Mechanisms (based on parameter values):\n- **Demand elasticity (\u03b7_D = -0.25)**: Relatively inelastic, suggesting limited demand response to price changes\n- **Slow capacity adjustment (\u03c4_K = 3.0 years)**: May be realistic for graphite mining/processing\n- **High price responsiveness (\u03b1_P = 0.80)**: Fast price adjustment relative to capacity\n\n### Cannot assess without data:\n- Supply-demand balance mechanisms\n- Price formation accuracy\n- Inventory management effectiveness\n\n## 4. Parameter Implications: **SPECULATIVE WITHOUT DATA**\n\nCurrent parameters suggest:\n- **\u03b7_D = -0.25**: If accurate, indicates graphite demand is relatively price-insensitive (specialty applications)\n- **\u03c4_K = 3.0 years**: Long adjustment time may explain persistent shortages in model\n- **\u03b1_P = 0.80**: Fast price adjustment should moderate shortages through demand destruction\n\n**Validation needed**: Compare these parameters against:\n- Observed price-demand relationships in graphite markets\n- Historical capacity expansion timelines\n- Actual price volatility patterns\n\n## 5. Data Limitations: **SEVERE**\n\n### Current Limitations:\n1. **No temporal overlap**: Cannot validate timing of predicted events\n2. **Missing trade data**: UN Comtrade shows $0 values, suggesting data gaps\n3. **Value vs. quantity**: Trade values don't directly validate physical shortage predictions\n4. **Aggregation level**: Unknown if data represents correct market segments\n\n### Missing External Factors:\n- **Technology substitution**: Synthetic vs. natural graphite trends\n- **Geopolitical events**: Trade restrictions, supply disruptions\n- **Downstream demand shifts**: EV battery market growth, steel industry changes\n- **Alternative supply sources**: Recycling, strategic reserves\n\n## Actionable Recommendations:\n\n### Immediate Actions:\n1. **Secure alternative data sources**: Industry reports, company filings, commodity price indices\n2. **Extend temporal coverage**: Obtain UN Comtrade data for simulation period\n3. **Validate parameter sources**: Cross-reference elasticity and adjustment parameters with literature\n\n### Model Improvements:\n1. **Add uncertainty bounds**: Current point predictions lack confidence intervals\n2. **Incorporate external shocks**: Model should include disruption scenarios\n3. **Validate subcomponents**: Test individual mechanisms (demand curves, supply responses) separately\n\n### Validation Strategy:\n1. **Stylized fact validation**: Compare model patterns with known graphite market characteristics\n2. **Cross-validation**: Test parameters against different time periods/regions\n3. **Expert elicitation**: Validate assumptions with industry specialists\n\n**Bottom Line**: This validation attempt fails due to data unavailability. The model's predictions remain unverified, requiring alternative validation approaches before deployment for policy or business decisions.",
+  "data_sources": {
+    "simulation": "runs/china_graphite_export_restriction_40pct_2025/20260128_225508",
+    "comtrade": "data/canonical/comtrade_graphite_trade.csv"
+  }
+}

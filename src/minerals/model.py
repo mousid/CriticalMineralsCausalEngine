@@ -48,7 +48,7 @@ def step(cfg: ScenarioConfig, s: State, shock: ShockSignals, rng: np.random.Gene
     g = cfg.parameters.demand_growth.g
     g_t = g ** s.t_index
 
-    # 3) demand with elasticity, policies, and demand shock
+    # 3) demand with elasticity, policies, demand surge, and macro demand destruction
     D = (
         b.D0
         * g_t
@@ -56,11 +56,13 @@ def step(cfg: ScenarioConfig, s: State, shock: ShockSignals, rng: np.random.Gene
         * (1.0 - pol.substitution)
         * (1.0 - pol.efficiency)
         * (1.0 + shock.demand_surge)
+        * shock.demand_destruction_mult
     )
     D = max(D, eps)
 
-    # 4) effective supply under export restriction
-    Q_eff = Q * (1.0 - shock.export_restriction)
+    # 4) effective supply under export restriction, policy shock, and capacity reduction
+    supply_mult = (1.0 - shock.export_restriction) * shock.policy_supply_mult * shock.capacity_supply_mult
+    Q_eff = Q * supply_mult
 
     # 5) inventory update (+ stockpile release if any)
     # stockpile_release from shocks is a one-time delta (tons) in specified years

@@ -1,0 +1,74 @@
+{
+  "run_dir": "runs/graphite_trade_shock_2008/20260128_230749",
+  "reference_year": 2008,
+  "timestamp": "2026-01-29T00:41:16.517859",
+  "comparison": {
+    "baseline_trade_usd": 36454578.666666664,
+    "baseline_years": [
+      2005,
+      2006,
+      2007
+    ],
+    "overlapping_years": [
+      2000,
+      2001,
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011
+    ],
+    "n_years": 12,
+    "reference_year": {
+      "year": 2008,
+      "model_prediction": {
+        "shortage": 30.000000011806364,
+        "price": 0.999999999980004,
+        "inventory_cover": 0.2000000017866841
+      },
+      "actual_data": {
+        "trade_value_usd": 53422791.0,
+        "pct_change_from_baseline": 46.546175964581174
+      }
+    },
+    "summary": {
+      "avg_model_shortage": 2.500000021528791,
+      "avg_model_price": 1.068525475106451,
+      "avg_actual_trade": 39857301.583333336,
+      "trade_volatility": 18057487.220770113
+    }
+  },
+  "retrieved_documents": [
+    {
+      "source": "trade_reports/graphite_trade_analysis_2005_2012.txt",
+      "text_preview": "Disruption Period (2008-2010):\n- 2008: Sharp increase to $53M (46% above baseline) due to industrial demand\n- 2009: Decline to $32M following financial crisis demand destruction\n- 2010: Recovery to $5..."
+    },
+    {
+      "source": "trade_reports/graphite_trade_analysis_2005_2012.txt",
+      "text_preview": "Baseline Period (2005-2007):\n- Average annual imports: $34 million USD\n- Primary suppliers: China (72%), Mexico (12%), Canada (8%)\n- Stable pricing with low volatility\n\nDisruption Period (2008-2010):\n..."
+    },
+    {
+      "source": "policy/china_export_policy_2010.txt",
+      "text_preview": "China Export Restrictions on Critical Minerals (2010)\n\nIn 2010, China implemented significant export quotas on rare earth elements \nand other critical minerals, including graphite. Key policy measures..."
+    },
+    {
+      "source": "usgs/graphite_2008_summary.txt",
+      "text_preview": "Price volatility was observed in Q3 2008, with spot prices increasing 25-40% \nabove 2007 levels due to supply chain constraints and export quota discussions \nin China.\n\nThe financial crisis in late 20..."
+    },
+    {
+      "source": "trade_reports/graphite_trade_analysis_2005_2012.txt",
+      "text_preview": "Post-Shock Period (2011-2012):\n- Sustained higher trade values ($87M in 2011)\n- Supply chain diversification efforts\n- Emergence of synthetic graphite alternatives\n\nThe data suggests that graphite mar..."
+    }
+  ],
+  "llm_analysis": "## Validation Analysis Using Historical Documents\n\n### 1. Historical Context Validation\n\nThe retrieved documents **strongly support** the model's core mechanisms but reveal **missing complexity**:\n\n**Supported Mechanisms:**\n- **Supply-demand imbalances causing price increases**: Document 4 confirms \"Price volatility was observed in Q3 2008, with spot prices increasing 25-40% above 2007 levels due to supply chain constraints\"\n- **Capacity adjustment delays**: Document 5 states \"adjustment periods of 2-3 years for new supply capacity\" - this aligns with the model's capacity adjustment time (\u03c4_K) of 3.0 years\n\n**Missing Mechanisms:**\n- **Export policy shocks**: Document 3 describes China's \"Export quotas reduced by 30-40% compared to 2009 levels\" - this external policy intervention isn't captured in the model\n- **Demand destruction from financial crises**: Document 1 shows \"2009: Decline to $32M following financial crisis demand destruction\" - the model lacks macroeconomic shock mechanisms\n\n### 2. Directional Accuracy Assessment\n\n**Model vs. Actual Data (2008):**\n- Model: Predicts shortage (30 units) and stable price ($1.00)\n- Actual: Trade value increased 46.5% to $53.4M\n- **Directional mismatch**: Model shows shortage but actual data shows increased trade activity\n\n**Model vs. Historical Accounts:**\nDocument 1 describes 2008 as having \"Sharp increase to $53M (46% above baseline) due to industrial demand,\" while Document 4 notes \"spot prices increasing 25-40% above 2007 levels.\"\n\nThe model correctly identifies supply-demand tension but **fails to capture the price spike mechanism** that historical documents clearly show occurred.\n\n### 3. Magnitude Assessment\n\nThe discrepancies are partially explained by factors in historical documents:\n\n**Price Adjustment Speed:**\n- Model uses \u03b1_P = 0.80, suggesting rapid price adjustment\n- Document 4 shows \"25-40% price increases\" in Q3 2008, but Document 1 shows trade values increased 46% for the full year\n- **Assessment**: Model's price adjustment may be too slow to capture quarterly volatility\n\n**Missing External Shocks:**\n- Document 3's export quota reductions of \"30-40%\" represent supply shocks not in the model\n- Document 5 notes markets \"exhibit significant responsiveness to both demand shocks (financial crisis) and supply shocks (export restrictions)\"\n\n### 4. Mechanism Refinement Recommendations\n\nBased on historical documents, the model should incorporate:\n\n**1. Policy Intervention Module:**\nFrom Document 3: \"Export quotas reduced by 30-40%\" and \"Licensing requirements tightened\"\n- Add exogenous policy shock variables\n- Include quota constraint mechanisms\n\n**2. Macroeconomic Demand Shocks:**\nFrom Document 1: \"financial crisis demand destruction\"\n- Include external demand shock parameters\n- Model demand volatility beyond price elasticity\n\n**3. Supply Diversification Dynamics:**\nFrom Document 5: \"Supply chain diversification efforts\" and \"Emergence of synthetic graphite alternatives\"\n- Add supplier concentration risk factors\n- Include substitution mechanisms\n\n**4. Multi-Period Adjustment Cycles:**\nDocument 1 shows the 2008-2010 pattern: \"Sharp increase \u2192 Decline \u2192 Recovery\"\n- Current model appears to capture steady-state, not cyclical adjustments\n\n### 5. Parameter Calibration Suggestions\n\n**Demand Elasticity (\u03b7_D = -0.25):**\nDocument 5 states markets \"exhibit significant responsiveness to both demand shocks and supply shocks.\" The 46% trade value increase with supply constraints suggests **demand may be less elastic** than -0.25, indicating critical material behavior.\n\n**Price Adjustment Speed (\u03b1_P = 0.80):**\nDocument 4 shows quarterly price spikes of \"25-40%,\" suggesting **faster price adjustment** needed to capture spot market volatility.\n\n**Capacity Adjustment Time (\u03c4_K = 3.0 years):**\nDocument 5's \"adjustment periods of 2-3 years for new supply capacity\" **validates this parameter** as appropriate.\n\n**Recommended Additional Parameters:**\n- Export quota shock magnitude: 30-40% (from Document 3)\n- Demand destruction shock: ~40% reduction (inferred from 2008-2009 trade value drop in Document 1)\n- Supplier concentration factor: China 72% baseline (from Document 2)\n\n### Conclusion\n\nThe historical documents reveal the model captures **structural relationships correctly** but lacks **external shock mechanisms** that dominated the 2008 period. The 46% trade value increase contradicts the model's shortage prediction because real-world export restrictions and industrial demand surges aren't modeled, despite driving the actual market dynamics described in the retrieved documents.",
+  "data_sources": {
+    "simulation": "runs/graphite_trade_shock_2008/20260128_230749",
+    "comtrade": "data/canonical/comtrade_graphite_trade.csv",
+    "retrieved_docs": 5
+  }
+}

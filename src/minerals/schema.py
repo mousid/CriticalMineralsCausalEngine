@@ -70,11 +70,25 @@ class PolicyConfig(BaseModel):
 
 
 class ShockConfig(BaseModel):
-    """Shock configuration."""
-    type: Literal["export_restriction", "demand_surge", "capex_shock", "stockpile_release"] = Field(..., description="Shock type")
+    """Configuration for a supply/demand shock."""
+
+    type: Literal[
+        "export_restriction",
+        "demand_surge",
+        "capex_shock",
+        "stockpile_release",
+        "capacity_reduction",
+        "policy_shock",
+        "macro_demand_shock",
+    ] = Field(..., description="Shock type")
     start_year: int = Field(..., description="Start year")
     end_year: int = Field(..., description="End year")
-    magnitude: float = Field(..., description="Shock magnitude (for stockpile_release: one-time inventory delta in tons)")
+    magnitude: float = Field(
+        ...,
+        description="For policy_shock: 0.3 = 30% quota reduction; for macro_demand_shock: -0.4 = 40% demand drop",
+    )
+    quota_reduction: Optional[float] = Field(default=None, description="Specific quota % (policy_shock)")
+    demand_destruction: Optional[float] = Field(default=None, description="Demand drop % (macro_demand_shock)")
 
 
 class OutputsConfig(BaseModel):
